@@ -1,0 +1,38 @@
+{
+  "users": [
+    {
+      "email": "hermanngumbu@gmail.com",
+      "password": "test123",
+      "id": 1
+    }
+  ],
+  "polls": [
+    {
+      "question": "What is the best country in Africa",
+      "options": [
+        {
+          "id": 1,
+          "text": "South Africa",
+          "votes": 1
+        },
+        {
+          "id": 2,
+          "text": "Maroc",
+          "votes": 0
+        },
+        {
+          "id": 3,
+          "text": "Kenya",
+          "votes": 0
+        },
+        {
+          "id": 4,
+          "text": "DRC",
+          "votes": 1
+        }
+      ],
+      "createdBy": 1,
+      "id": 1
+    }
+  ]
+}
