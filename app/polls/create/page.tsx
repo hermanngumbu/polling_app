@@ -1,16 +1,10 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+'use client';
+
 import { CreatePollForm } from '@/components/CreatePollForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import withAuth from '@/components/withAuth';
 
-export default function CreatePollPage() {
-  const cookieStore = cookies();
-  const userCookie = cookieStore.get('user');
-
-  if (!userCookie) {
-    redirect('/login');
-  }
-
+function CreatePollPage() {
   return (
     <div className="max-w-2xl mx-auto py-8">
       <Card>
@@ -24,3 +18,5 @@ export default function CreatePollPage() {
     </div>
   );
 }
+
+export default withAuth(CreatePollPage);
