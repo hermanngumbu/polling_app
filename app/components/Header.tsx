@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Button } from "@/components/ui/button";
 
 async function Header() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userCookie = cookieStore.get("user");
   const user = userCookie ? JSON.parse(userCookie.value) : null;
 

@@ -18,7 +18,7 @@
         {
           "id": 2,
           "text": "Maroc",
-          "votes": 0
+          "votes": 1
         },
         {
           "id": 3,
@@ -28,11 +28,33 @@
         {
           "id": 4,
           "text": "DRC",
-          "votes": 2
+          "votes": 3
         }
       ],
       "createdBy": 1,
       "id": 1
+    },
+    {
+      "question": "What is a most popular language in the world",
+      "options": [
+        {
+          "id": 1,
+          "text": "Java",
+          "votes": 0
+        },
+        {
+          "id": 2,
+          "text": "Python",
+          "votes": 1
+        },
+        {
+          "id": 3,
+          "text": "JS",
+          "votes": 1
+        }
+      ],
+      "createdBy": 1,
+      "id": 2
     }
   ]
 }

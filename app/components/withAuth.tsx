@@ -1,11 +1,11 @@
 'use client';
 
+import { useEffect, type ComponentType } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
-const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) => {
-  const Wrapper = (props: P) => {
+const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
+  const Wrapper = (props: P): JSX.Element | null => {
     const { user, loading } = useAuth();
     const router = useRouter();
 
@@ -26,7 +26,13 @@ const withAuth = <P extends object>(WrappedComponent: React.ComponentType<P>) =>
     return <WrappedComponent {...props} />;
   };
 
+  Wrapper.displayName = `withAuth(${getDisplayName(WrappedComponent)})`;
+
   return Wrapper;
 };
+
+function getDisplayName<P>(WrappedComponent: ComponentType<P>) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
 
 export default withAuth;

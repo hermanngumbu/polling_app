@@ -1,43 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useActionState } from 'react';
+import { signup } from '@/lib/actions';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+
+const initialState = { error: null };
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [state, formAction] = useActionState(signup, initialState);
   const router = useRouter();
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        router.push('/login');
-      }
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (state?.error) {
+      toast.error(state.error);
+    } else if (state?.success) {
+      router.push('/login');
     }
-  };
+  }, [state, router]);
 
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
@@ -47,18 +33,18 @@ export default function SignupPage() {
           <CardDescription>Create a new account to start making polls.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" name="password" type="password" required />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating Account...' : 'Create Account'}
+            {state?.error && <p className="text-red-500 text-sm">{state.error}</p>}
+            <Button type="submit" className="w-full">
+              Create Account
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

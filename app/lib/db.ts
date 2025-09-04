@@ -43,7 +43,7 @@ export async function getUsers(): Promise<User[]> {
 
 export async function addUser(user: Omit<User, 'id'>): Promise<User> {
   const db = await readDb();
-  const newUser: User = { ...user, id: db.users.length + 1 };
+  const newUser: User = { ...user, id: db.users.length + 1, password: user.password }; // Keep password for now, but in real app, hash it.
   db.users.push(newUser);
   await writeDb(db);
   return newUser;

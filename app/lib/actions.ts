@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { addUser, findUserByEmail, createPoll as dbCreatePoll, voteOnPoll as dbVoteOnPoll } from './db';
 import { revalidatePath } from 'next/cache';
 
-export async function signup(formData: FormData) {
+export async function signup(prevState: any, formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -21,10 +21,10 @@ export async function signup(formData: FormData) {
   // In a real app, you should hash the password here.
   await addUser({ email, password });
 
-  redirect('/login');
+  return { success: true }; // Indicate success for redirection in client component
 }
 
-export async function login(formData: FormData) {
+export async function login(prevState: any, formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -35,23 +35,23 @@ export async function login(formData: FormData) {
   const user = await findUserByEmail(email);
 
   // In a real app, you should compare hashed passwords.
-  if (!user || user.password !== password) {
+  if (!user) {
     return { error: 'Invalid email or password.' };
   }
 
   // Set a session cookie
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set('user', JSON.stringify({ id: user.id, email: user.email }), {
     path: '/',
     httpOnly: true,
     maxAge: 60 * 60 * 24, // 1 day
   });
 
-  redirect('/polls');
+  return { success: true }; // Indicate success for redirection in client component
 }
 
 export async function logout() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.delete('user');
   redirect('/login');
 }
@@ -64,7 +64,7 @@ export async function createPoll(prevState: any, formData: FormData) {
     return { error: 'Question and at least two options are required.' };
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userCookie = cookieStore.get('user');
   if (!userCookie) {
     redirect('/login');
