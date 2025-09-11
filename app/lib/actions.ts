@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { addUser, findUserByEmail, createPoll as dbCreatePoll, voteOnPoll as dbVoteOnPoll } from './db';
 import { revalidatePath } from 'next/cache';
+import bcrypt from 'bcrypt';
 
 export async function signup(prevState: any, formData: FormData) {
   const email = formData.get('email') as string;
@@ -18,8 +19,11 @@ export async function signup(prevState: any, formData: FormData) {
     return { error: 'User with this email already exists.' };
   }
 
-  // In a real app, you should hash the password here.
-  await addUser({ email, password });
+  const newUser = await addUser({ email, password });
+
+  if (!newUser) {
+    return { error: 'Failed to create user.' };
+  }
 
   return { success: true }; // Indicate success for redirection in client component
 }
@@ -34,8 +38,13 @@ export async function login(prevState: any, formData: FormData) {
 
   const user = await findUserByEmail(email);
 
-  // In a real app, you should compare hashed passwords.
-  if (!user) {
+  if (!user || !user.password) {
+    return { error: 'Invalid email or password.' };
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
     return { error: 'Invalid email or password.' };
   }
 
@@ -74,13 +83,17 @@ export async function createPoll(prevState: any, formData: FormData) {
   const poll = await dbCreatePoll({
     question,
     options: options.map((text, i) => ({ id: i + 1, text, votes: 0 })),
-    createdBy: user.id,
+    created_by: user.id, // Changed from createdBy to created_by
   });
+
+  if (!poll) {
+    return { error: 'Failed to create poll.' };
+  }
 
   redirect(`/polls/${poll.id}`);
 }
 
-export async function submitVote(pollId: number, optionId: number) {
+export async function submitVote(pollId: string, optionId: number) {
   await dbVoteOnPoll(pollId, optionId);
   revalidatePath(`/polls/${pollId}`);
 }
