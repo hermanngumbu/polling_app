@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { PollClientPage } from './client-page';
 
 export default async function PollPage({ params }: { params: { id: string } }) {
-  const pollId = parseInt(params.id, 10);
+  const pollId = params.id;
   const poll = await getPollById(pollId);
 
   if (!poll) {
